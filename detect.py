@@ -28,7 +28,7 @@ python3 detect.py \
 """
 
 import time
-from datetime import datetime
+
 time.sleep(2)
 
 import cv2
@@ -45,21 +45,25 @@ from periphery import GPIO
 
 
 from periphery import Serial
-#serial = Serial("/dev/ttyS1", 9600)    # pins 29/31 (9600 baud)
+serial = Serial("/dev/ttyS1", 9600)    # pins 29/31 (9600 baud)
 
-hand_state = 0 # 1 means open 0 means close
+hand_state = 1 # 1 means open 0 means close
+pin_40_control_command = GPIO("/dev/gpiochip0", 39, "out")  # pin 40
+pin_38_out_led   = GPIO("/dev/gpiochip0", 38, "out")  # pin 38
 
-
-motor = GPIO("/dev/gpiochip0", 9, "out")    # pin 11
-solenoid = GPIO("/dev/gpiochip0", 36, "out")  # pin 12
-pin_13_out_led   = GPIO("/dev/gpiochip0", 10, "out")  # pin 13
 
 #blink led five times on start
 for i in range(0,2):
-    pin_13_out_led.write(True)
+    pin_38_out_led.write(True)
     time.sleep(1)
-    pin_13_out_led.write(False)
+    pin_38_out_led.write(False)
     time.sleep(1)
+
+#initial state set hand open
+pin_40_control_command.write(True)
+serial.write(b"1")  
+hand_state = 1
+#end simulation
 
 
 #Initialize and report Sensor 0
@@ -72,35 +76,10 @@ else:
     print("Valid Sensor, ID reported as ",hex(sensor0.idModel))
 
 
-def open_hand():
-    global hand_state
-    solenoid.write(False)
-    motor.write(True)
-    time.sleep(3)
-    #serial.write(b"1")
-    hand_state = 1        
-    print("Hand Open")
-
-def close_hand():
-    global hand_state
-    motor.write(False)
-    solenoid.write(True)
-    time.sleep(1)
-    solenoid.write(False)
-    #serial.write(b"1")  
-    hand_state = 0
-    print("Hand close")
-    #end simulation
-
-
-#initial state set hand close
-close_hand()
-
-
-
 bus = sensor0.default_settings()
 #adxl default setting
 adxl_default(bus)
+
 
 
 def check_and_open_hand():
@@ -108,11 +87,10 @@ def check_and_open_hand():
     x,y,z = getAxes(bus)
 
     if x < 0.0 and z > 10.0:
-        motor.write(True)
+        pin_40_control_command.write(True)
         hand_state = 1
-        # serial.write(b"1")        
-        # print("Hand Open")
-        open_hand()
+        serial.write(b"1")        
+        print("Hand Open")
         time.sleep(3)
 
 
@@ -127,13 +105,10 @@ def check_and_close_hand(detection_percent,bbox_ratio):
     #if percent > 90 and bbox_ratio > 25:
     if detection_percent > 85 and bbox_ratio > 35 and (distance0 > 70 and distance0 < 95):
         hand_state = 0
-        # serial.write(b"0")    
-        # motor.write(False)
-        # print("Hand Close")
-        close_hand()
+        serial.write(b"0")    
+        pin_40_control_command.write(False)
+        print("Hand Close")
         time.sleep(3)
-
-
 
 def calculate_framerate(frame_rate_calc,t1,freq):
     print('FPS: {0:.2f}'.format(frame_rate_calc))
@@ -166,11 +141,11 @@ def main():
          
         # if hand is opened 
         if hand_state == 1:
-            pin_13_out_led.write(True)
+            pin_38_out_led.write(True)
             t1 = cv2.getTickCount()
             ret, cv2_im = cap.read()
             if not ret:
-                #pin_13_out_led.write(False)
+                #pin_38_out_led.write(False)
                 break
         
             cv2_im = cv2.resize(cv2_im,inference_size)
@@ -184,28 +159,26 @@ def main():
 
             frame_rate_calc = calculate_framerate(frame_rate_calc,t1,freq)
 
-            cv2.imshow('Vision Enable Hand', cv2_im)
+            #cv2.imshow('Vision Enable Hand', cv2_im)
             
             
         else:
             # hand is closed so need to check for opening the hand
-            pin_13_out_led.write(False)
+            pin_38_out_led.write(False)
             check_and_open_hand()
             
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-        if cv2.waitKey(1) & 0xFF == ord('s'):
-            cv2.imwrite("../images/"+datetime.now()+".jpg",cv2_im)
+        #if cv2.waitKey(1) & 0xFF == ord('q'):
+        #    break
     
-    pin_13_out_led.write(False) 
+    pin_38_out_led.write(False) 
     cap.release()
     cv2.destroyAllWindows()
 
     #close pin
-    pin_13_out_led.close()
-    motor.close()
-    #serial.close()
+    pin_38_out_led.close()
+    pin_40_control_command.close()
+    serial.close()
 
 
 def append_objs_to_img(cv2_im, inference_size, objs, labels):
