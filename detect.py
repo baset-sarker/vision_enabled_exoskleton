@@ -44,7 +44,7 @@ from pycoral.utils.edgetpu import run_inference
 from periphery import GPIO
 
 
-from periphery import Serial
+#from periphery import Serial
 #serial = Serial("/dev/ttyS1", 9600)    # pins 29/31 (9600 baud)
 
 hand_state = 1 # 1 means open 0 means close
@@ -168,8 +168,8 @@ def main():
             check_and_open_hand()
             
 
-        #if cv2.waitKey(1) & 0xFF == ord('q'):
-        #    break
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+           break
     
     pin_38_out_led.write(False) 
     cap.release()
