@@ -1,0 +1,23 @@
+#/etc/systemd/system
+sudo touch /etc/systemd/system/handservice.service
+#sudo systemctl start handservice.service
+#sudo systemctl stop handservice.service
+#sudo systemctl enable handservice.service
+#sudo systemctl disable handservice.service
+
+
+[Unit]
+Description=Example systemd service.
+After=weston.target
+
+[Service]
+Environment=DISPLAY=:0
+PAMName=login
+Type=simple
+User=mendel
+WorkingDirectory=/home/mendel/
+ExecStart=/bin/bash /home/mendel/precedent-challange-2022/run_start.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

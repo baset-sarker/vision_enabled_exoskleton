@@ -1,0 +1,4 @@
+door khob
+cup
+bottle
+block
