@@ -45,7 +45,7 @@ from periphery import GPIO
 
 
 from periphery import Serial
-serial = Serial("/dev/ttyS1", 9600)    # pins 29/31 (9600 baud)
+#serial = Serial("/dev/ttyS1", 9600)    # pins 29/31 (9600 baud)
 
 hand_state = 1 # 1 means open 0 means close
 pin_40_control_command = GPIO("/dev/gpiochip0", 39, "out")  # pin 40
@@ -61,7 +61,7 @@ for i in range(0,2):
 
 #initial state set hand open
 pin_40_control_command.write(True)
-serial.write(b"1")  
+#serial.write(b"1")  
 hand_state = 1
 #end simulation
 
@@ -89,7 +89,7 @@ def check_and_open_hand():
     if x < 0.0 and z > 10.0:
         pin_40_control_command.write(True)
         hand_state = 1
-        serial.write(b"1")        
+        #erial.write(b"1")        
         print("Hand Open")
         time.sleep(3)
 
@@ -105,7 +105,7 @@ def check_and_close_hand(detection_percent,bbox_ratio):
     #if percent > 90 and bbox_ratio > 25:
     if detection_percent > 85 and bbox_ratio > 35 and (distance0 > 70 and distance0 < 95):
         hand_state = 0
-        serial.write(b"0")    
+        #serial.write(b"0")    
         pin_40_control_command.write(False)
         print("Hand Close")
         time.sleep(3)
@@ -178,7 +178,7 @@ def main():
     #close pin
     pin_38_out_led.close()
     pin_40_control_command.close()
-    serial.close()
+    #serial.close()
 
 
 def append_objs_to_img(cv2_im, inference_size, objs, labels):
