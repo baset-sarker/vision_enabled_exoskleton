@@ -47,23 +47,40 @@ from periphery import GPIO
 #from periphery import Serial
 #serial = Serial("/dev/ttyS1", 9600)    # pins 29/31 (9600 baud)
 
-hand_state = 1 # 1 means open 0 means close
-pin_40_control_command = GPIO("/dev/gpiochip0", 39, "out")  # pin 40
-pin_38_out_led   = GPIO("/dev/gpiochip0", 38, "out")  # pin 38
+hand_state = 0 # 1 means open 0 means close
+
+pin_13_out_led   = GPIO("/dev/gpiochip0", 38, "out")  # pin 38
+motor = GPIO("/dev/gpiochip0", 9, "out")    # pin 11
+solenoid = GPIO("/dev/gpiochip0", 36, "out")  # pin 12
+pin_13_out_led   = GPIO("/dev/gpiochip0", 10, "out")  # pin 13
 
 
 #blink led five times on start
 for i in range(0,2):
-    pin_38_out_led.write(True)
+    pin_13_out_led.write(True)
     time.sleep(1)
-    pin_38_out_led.write(False)
+    pin_13_out_led.write(False)
     time.sleep(1)
 
-#initial state set hand open
-pin_40_control_command.write(True)
-#serial.write(b"1")  
-hand_state = 1
-#end simulation
+def open_hand():
+    global hand_state
+    solenoid.write(False)
+    motor.write(True)
+    time.sleep(3)
+    #serial.write(b"1")
+    hand_state = 1        
+    print("Hand Open")
+
+def close_hand():
+    global hand_state
+    motor.write(False)
+    solenoid.write(True)
+    time.sleep(1)
+    solenoid.write(False)
+    #serial.write(b"1")  
+    hand_state = 0
+    print("Hand close")
+    #end simulation
 
 
 #Initialize and report Sensor 0
@@ -87,9 +104,7 @@ def check_and_open_hand():
     x,y,z = getAxes(bus)
 
     if x < 0.0 and z > 10.0:
-        pin_40_control_command.write(True)
-        hand_state = 1
-        #erial.write(b"1")        
+        open_hand()    
         print("Hand Open")
         time.sleep(3)
 
@@ -104,10 +119,7 @@ def check_and_close_hand(detection_percent,bbox_ratio):
 
     #if percent > 90 and bbox_ratio > 25:
     if detection_percent > 85 and bbox_ratio > 35 and (distance0 > 70 and distance0 < 95):
-        hand_state = 0
-        #serial.write(b"0")    
-        pin_40_control_command.write(False)
-        print("Hand Close")
+        close_hand()
         time.sleep(3)
 
 def calculate_framerate(frame_rate_calc,t1,freq):
@@ -141,11 +153,11 @@ def main():
          
         # if hand is opened 
         if hand_state == 1:
-            pin_38_out_led.write(True)
+            pin_13_out_led.write(True)
             t1 = cv2.getTickCount()
             ret, cv2_im = cap.read()
             if not ret:
-                #pin_38_out_led.write(False)
+                #pin_13_out_led.write(False)
                 break
         
             cv2_im = cv2.resize(cv2_im,inference_size)
@@ -164,20 +176,21 @@ def main():
             
         else:
             # hand is closed so need to check for opening the hand
-            pin_38_out_led.write(False)
+            pin_13_out_led.write(False)
             check_and_open_hand()
             
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
            break
     
-    pin_38_out_led.write(False) 
+    pin_13_out_led.write(False) 
     cap.release()
     cv2.destroyAllWindows()
 
     #close pin
-    pin_38_out_led.close()
-    pin_40_control_command.close()
+    pin_13_out_led.close()
+    motor.close()
+    solenoid.close()
     #serial.close()
 
 
