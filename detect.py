@@ -50,10 +50,9 @@ from periphery import Serial
 hand_state = 0 # 1 means open 0 means close
 
 
-motor = GPIO("/dev/gpiochip0", 9, "in")    # pin 11
-solenoid = GPIO("/dev/gpiochip0", 36, "in")  # pin 12
+motor = GPIO("/dev/gpiochip0", 9, "out")    # pin 11
+solenoid = GPIO("/dev/gpiochip0", 36, "out")  # pin 12
 pin_13_out_led   = GPIO("/dev/gpiochip0", 10, "out")  # pin 13
-
 
 #blink led five times on start
 for i in range(0,2):
