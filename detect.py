@@ -67,6 +67,7 @@ def open_hand():
     solenoid.write(False)
     motor.write(True)
     time.sleep(3)
+    motor.write(False)
     #serial.write(b"1")
     hand_state = 1        
     print("Hand Open")
@@ -106,7 +107,6 @@ def check_and_open_hand():
     if x < 0.0 and z > 10.0:
         open_hand()    
         print("Hand Open")
-        time.sleep(3)
 
 
 
@@ -179,7 +179,7 @@ def main():
             pin_13_out_led.write(False)
             check_and_open_hand()
             
-
+        
         if cv2.waitKey(1) & 0xFF == ord('q'):
            break
     
