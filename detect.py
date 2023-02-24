@@ -127,7 +127,7 @@ def check_and_relese_object():
             print("## command Hand Open")
             break
 
-check_and_relese_object()
+#check_and_relese_object()
 
 def check_object_close_or_not(detection_percent,bbox_ratio):
     global hand_state
