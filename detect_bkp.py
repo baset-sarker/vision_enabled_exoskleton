@@ -103,11 +103,15 @@ adxl_default(bus)
 
 def check_and_open_hand():
     global bus,hand_state
-    x,y,z = getAxes(bus)
+    
 
-    if x < 0.0 and z > 10.0:
-        open_hand()    
-        print("Hand Open")
+    while True:
+        x,y,z = getAxes(bus)
+        print("x: ",x,"y: ",y,"z: ",z)
+        if x < 0.0 and z > 10.0:
+            open_hand()    
+            print("Hand Open")
+            break
 
 
 def check_and_close_hand(detection_percent,bbox_ratio):
