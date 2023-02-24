@@ -84,6 +84,8 @@ def close_hand():
     #end simulation
 
 
+
+
 #Initialize and report Sensor 0
 sensor0_i2cid = 0x29
 sensor0 = VL6180X(sensor0_i2cid)
@@ -97,7 +99,6 @@ else:
 bus = sensor0.default_settings()
 #adxl default setting
 adxl_default(bus)
-
 
 
 def check_and_open_hand():
@@ -128,6 +129,11 @@ def calculate_framerate(frame_rate_calc,t1,freq):
     time1 = (t2-t1)/freq
     frame_rate_calc= 1/time1
     return frame_rate_calc
+
+
+
+#initialize hand
+close_hand()
 
 
 def main():

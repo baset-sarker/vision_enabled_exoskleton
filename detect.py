@@ -122,7 +122,6 @@ def check_and_relese_object():
         x,y,z = getAxes(bus)
         print(x,y,z)    
         if x < 0.0 and z > 10.0:
-            
             open_hand()    
             print("## command Hand Open")
             break
