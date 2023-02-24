@@ -185,7 +185,7 @@ def main():
 
         cv2_im,percent,bbox_ratio = append_objs_to_img(cv2_im, inference_size, objs, labels)
 
-        if hand_state == 1 and hand_state == 0:
+        if hand_state == 1 or hand_state == 0:
             print("Hand is open")
             check_object_close_or_not(percent,bbox_ratio)
         elif hand_state == 2:
