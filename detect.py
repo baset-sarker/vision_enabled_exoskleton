@@ -189,8 +189,13 @@ def main():
         print("Distance: ",distance0)
 
         if hand_state == 1 or hand_state == 0:
-            print("Hand is open",hand_state)
+            if hand_state == 1:
+                text_to_show = "Open to grab object"
+            else:
+                text_to_show = "Initial Close"
+            print(text_to_show,hand_state)
             check_object_close_or_not(percent,bbox_ratio)
+            
         elif hand_state == 2:
             print("Hand is close with object",hand_state)
             check_and_relese_object()
