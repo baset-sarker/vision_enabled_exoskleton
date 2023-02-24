@@ -80,7 +80,7 @@ def close_hand():
     solenoid.write(False)
     #serial.write(b"1")  
     hand_state = 0
-    print("Hand close")
+    print("Command Hand close")
     #end simulation
 
 #initialize hand
@@ -109,7 +109,7 @@ def check_and_relese_object():
 
     if x < 0.0 and z > 10.0:
         open_hand()    
-        print("Hand Open")
+        print("## command Hand Open")
 
 
 def check_object_close_or_not(detection_percent,bbox_ratio):
@@ -129,7 +129,7 @@ def check_object_close_or_not(detection_percent,bbox_ratio):
         time.sleep(3)
 
 def calculate_framerate(frame_rate_calc,t1,freq):
-    print('FPS: {0:.2f}'.format(frame_rate_calc))
+    #print('FPS: {0:.2f}'.format(frame_rate_calc))
     # Calculate framerate
     t2 = cv2.getTickCount()
     time1 = (t2-t1)/freq
@@ -175,8 +175,10 @@ def main():
         cv2_im,percent,bbox_ratio = append_objs_to_img(cv2_im, inference_size, objs, labels)
 
         if hand_state == 1:
+            print("Hand is open")
             check_object_close_or_not(percent,bbox_ratio)
         elif hand_state == 0:
+            print("Hand is close")
             check_and_relese_object()
             
         frame_rate_calc = calculate_framerate(frame_rate_calc,t1,freq)
@@ -215,7 +217,7 @@ def append_objs_to_img(cv2_im, inference_size, objs, labels):
         img_area = height * width
 
         bbox_ratio = (b_area/img_area)*100
-        print("img_area: ",img_area," box_area: ",b_area," box ratio: ",bbox_ratio)
+        #print("img_area: ",img_area," box_area: ",b_area," box ratio: ",bbox_ratio)
     
 
         percent = int(100 * obj.score)
