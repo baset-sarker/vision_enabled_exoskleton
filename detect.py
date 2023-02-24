@@ -117,9 +117,9 @@ adxl_default(bus)
 
 def check_and_relese_object():
     global bus,hand_state
-    x,y,z = getAxes(bus)
     
     while True:
+        x,y,z = getAxes(bus)
         print(x,y,z)    
         if x < 0.0 and z > 10.0:
             
