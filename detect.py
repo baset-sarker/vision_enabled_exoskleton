@@ -114,16 +114,19 @@ adxl_default(bus)
 
 
 
+
 def check_and_relese_object():
     global bus,hand_state
     x,y,z = getAxes(bus)
     
     while True:
         if x < 0.0 and z > 10.0:
+            print(x,y,z)
             open_hand()    
             print("## command Hand Open")
             break
 
+check_and_relese_object()
 
 def check_object_close_or_not(detection_percent,bbox_ratio):
     global hand_state
