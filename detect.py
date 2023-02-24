@@ -71,12 +71,13 @@ def open_hand():
     #serial.write(b"1")
     hand_state = 1        
     print("Hand Open")
+    time.sleep(3)
 
 def close_hand_with_object():
     global hand_state
     motor.write(False)
     solenoid.write(True)
-    time.sleep(1)
+    time.sleep(2)
     solenoid.write(False)
     #serial.write(b"1")  
     hand_state = 2
