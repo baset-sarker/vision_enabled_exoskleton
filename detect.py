@@ -66,7 +66,7 @@ def open_hand():
     global hand_state
     solenoid.write(False)
     motor.write(True)
-    time.sleep(3)
+    time.sleep(2.5)
     motor.write(False)
     #serial.write(b"1")
     hand_state = 1        
@@ -136,12 +136,12 @@ def check_object_close_or_not(detection_percent,bbox_ratio):
     distance0 = sensor0.get_distance()
     print("Distance: ",distance0)
 
-    if hand_state == 0 and detection_percent > 90 and (distance0 > 90 and distance0 < 130):
+    if hand_state == 0 and detection_percent > 90 and (distance0 > 90 and distance0 < 150):
         open_hand()
         time.sleep(3)
 
     #if percent > 90 and bbox_ratio > 25:
-    if hand_state == 1 and detection_percent > 85 and bbox_ratio > 35 and (distance0 > 70 and distance0 < 90):
+    if hand_state == 1 and detection_percent > 85 and bbox_ratio > 35 and (distance0 > 30 and distance0 < 90):
         close_hand_with_object()
         time.sleep(3)
 
