@@ -209,7 +209,7 @@ def main():
         
             
         frame_rate_calc = calculate_framerate(frame_rate_calc,t1,freq)
-        cv2.imshow('Vision Enable Hand', cv2_im)
+        cv2.imshow('Vision Enable Exoskleton', cv2_im)
 
         # else:
             # hand is closed so need to check for opening the hand
