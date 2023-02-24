@@ -185,8 +185,8 @@ def main():
 
         cv2_im,percent,bbox_ratio = append_objs_to_img(cv2_im, inference_size, objs, labels)
 
-        distance0 = sensor0.get_distance()
-        print("Distance: ",distance0)
+        #distance0 = sensor0.get_distance()
+        #print("Distance: ",distance0)
 
         if hand_state == 1 or hand_state == 0:
             if hand_state == 1:
