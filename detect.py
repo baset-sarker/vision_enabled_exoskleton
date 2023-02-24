@@ -185,14 +185,15 @@ def main():
 
         cv2_im,percent,bbox_ratio = append_objs_to_img(cv2_im, inference_size, objs, labels)
 
+        distance0 = sensor0.get_distance()
+        print("Distance: ",distance0)
+
         if hand_state == 1 or hand_state == 0:
-            print("Hand is open")
+            print("Hand is open",hand_state)
             check_object_close_or_not(percent,bbox_ratio)
         elif hand_state == 2:
-            print("Hand is close")
+            print("Hand is close with object",hand_state)
             check_and_relese_object()
-
-        print("hand state: ",hand_state)
             
         frame_rate_calc = calculate_framerate(frame_rate_calc,t1,freq)
         cv2.imshow('Vision Enable Hand', cv2_im)
