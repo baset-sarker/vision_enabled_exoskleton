@@ -117,10 +117,12 @@ adxl_default(bus)
 def check_and_relese_object():
     global bus,hand_state
     x,y,z = getAxes(bus)
-
-    if x < 0.0 and z > 10.0:
-        open_hand()    
-        print("## command Hand Open")
+    
+    while True:
+        if x < 0.0 and z > 10.0:
+            open_hand()    
+            print("## command Hand Open")
+            break
 
 
 def check_object_close_or_not(detection_percent,bbox_ratio):
@@ -188,7 +190,11 @@ def main():
         #distance0 = sensor0.get_distance()
         #print("Distance: ",distance0)
 
-        if hand_state == 1 or hand_state == 0:
+        if hand_state == 2:
+            print("Hand is close with object",hand_state)
+            check_and_relese_object()
+
+        elif hand_state == 1 or hand_state == 0:
             if hand_state == 1:
                 text_to_show = "Open to grab object"
             else:
@@ -196,9 +202,7 @@ def main():
             print(text_to_show,hand_state)
             check_object_close_or_not(percent,bbox_ratio)
 
-        elif hand_state == 2:
-            print("Hand is close with object",hand_state)
-            check_and_relese_object()
+        
             
         frame_rate_calc = calculate_framerate(frame_rate_calc,t1,freq)
         cv2.imshow('Vision Enable Hand', cv2_im)
