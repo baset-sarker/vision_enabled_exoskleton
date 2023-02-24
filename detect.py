@@ -83,6 +83,9 @@ def close_hand():
     print("Hand close")
     #end simulation
 
+#initialize hand
+close_hand()
+
 
 #Initialize and report Sensor 0
 sensor0_i2cid = 0x29
