@@ -47,7 +47,7 @@ from periphery import GPIO
 #from periphery import Serial
 #serial = Serial("/dev/ttyS1", 9600)    # pins 29/31 (9600 baud)
 
-hand_state = 0 # 1 means open 0 means close
+hand_state = 0 # 1 means open 0 means close , 2 means close with object
 
 pin_13_out_led   = GPIO("/dev/gpiochip0", 38, "out")  # pin 38
 motor = GPIO("/dev/gpiochip0", 9, "out")    # pin 11
@@ -71,6 +71,17 @@ def open_hand():
     #serial.write(b"1")
     hand_state = 1        
     print("Hand Open")
+
+def close_hand_with_object():
+    global hand_state
+    motor.write(False)
+    solenoid.write(True)
+    time.sleep(1)
+    solenoid.write(False)
+    #serial.write(b"1")  
+    hand_state = 2
+    print("Command Hand close with object")
+    #end simulation
 
 def close_hand():
     global hand_state
@@ -125,7 +136,7 @@ def check_object_close_or_not(detection_percent,bbox_ratio):
 
     #if percent > 90 and bbox_ratio > 25:
     if hand_state == 1 and detection_percent > 85 and bbox_ratio > 35 and (distance0 > 50 and distance0 < 70):
-        close_hand()
+        close_hand_with_object()
         time.sleep(3)
 
 def calculate_framerate(frame_rate_calc,t1,freq):
@@ -174,10 +185,10 @@ def main():
 
         cv2_im,percent,bbox_ratio = append_objs_to_img(cv2_im, inference_size, objs, labels)
 
-        if hand_state == 1:
+        if hand_state == 1 and hand_state == 0:
             print("Hand is open")
             check_object_close_or_not(percent,bbox_ratio)
-        elif hand_state == 0:
+        elif hand_state == 2:
             print("Hand is close")
             check_and_relese_object()
             
