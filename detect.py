@@ -130,12 +130,12 @@ def check_object_close_or_not(detection_percent,bbox_ratio):
     distance0 = sensor0.get_distance()
     print("Distance: ",distance0)
 
-    if hand_state == 0 and detection_percent > 90 and (distance0 > 70 and distance0 < 130):
+    if hand_state == 0 and detection_percent > 90 and (distance0 > 90 and distance0 < 130):
         open_hand()
         time.sleep(3)
 
     #if percent > 90 and bbox_ratio > 25:
-    if hand_state == 1 and detection_percent > 85 and bbox_ratio > 35 and (distance0 > 50 and distance0 < 70):
+    if hand_state == 1 and detection_percent > 85 and bbox_ratio > 35 and (distance0 > 70 and distance0 < 90):
         close_hand_with_object()
         time.sleep(3)
 
@@ -195,7 +195,7 @@ def main():
                 text_to_show = "Initial Close"
             print(text_to_show,hand_state)
             check_object_close_or_not(percent,bbox_ratio)
-            
+
         elif hand_state == 2:
             print("Hand is close with object",hand_state)
             check_and_relese_object()
