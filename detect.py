@@ -130,7 +130,7 @@ def check_object_close_or_not(detection_percent,bbox_ratio):
     distance0 = sensor0.get_distance()
     print("Distance: ",distance0)
 
-    if hand_state == 0 and detection_percent > 85 and bbox_ratio > 35 and (distance0 > 70 and distance0 < 100):
+    if hand_state == 0 and detection_percent > 90 and (distance0 > 70 and distance0 < 120):
         open_hand()
         time.sleep(3)
 
