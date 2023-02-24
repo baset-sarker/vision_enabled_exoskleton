@@ -103,7 +103,6 @@ adxl_default(bus)
 
 def check_and_open_hand():
     global bus,hand_state
-    
 
     while True:
         x,y,z = getAxes(bus)
@@ -184,6 +183,7 @@ def main():
             
             
         else:
+            print("we are in thi place")
             # hand is closed so need to check for opening the hand
             pin_13_out_led.write(False)
             check_and_open_hand()
