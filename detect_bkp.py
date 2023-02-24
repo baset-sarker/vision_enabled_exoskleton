@@ -100,7 +100,7 @@ adxl_default(bus)
 
 
 
-def check_and_relese_object():
+def check_and_open_hand():
     global bus,hand_state
     x,y,z = getAxes(bus)
 
@@ -109,16 +109,12 @@ def check_and_relese_object():
         print("Hand Open")
 
 
-def check_object_close_or_not(detection_percent,bbox_ratio):
+def check_and_close_hand(detection_percent,bbox_ratio):
     global hand_state
 
     # get distance 
     distance0 = sensor0.get_distance()
     print("Distance: ",distance0)
-
-    if hand_state == 0 and detection_percent > 85 and bbox_ratio > 35 and (distance0 > 70 and distance0 < 100):
-        open_hand()
-        time.sleep(3)
 
     #if percent > 90 and bbox_ratio > 25:
     if hand_state == 1 and detection_percent > 85 and bbox_ratio > 35 and (distance0 > 50 and distance0 < 70):
@@ -155,32 +151,33 @@ def main():
     while cap.isOpened():
          
         # if hand is opened 
-        #if hand_state == 1:
-        pin_13_out_led.write(True)
-        t1 = cv2.getTickCount()
-        ret, cv2_im = cap.read()
-        if not ret:
-            #pin_13_out_led.write(False)
-            break
-    
-        cv2_im = cv2.resize(cv2_im,inference_size)
-        cv2_im = cv2.rotate(cv2_im, cv2.ROTATE_90_COUNTERCLOCKWISE)
-        cv2_im_rgb = cv2.cvtColor(cv2_im, cv2.COLOR_BGR2RGB)
-        run_inference(interpreter, cv2_im_rgb.tobytes())
-        objs = get_objects(interpreter, threshold)[:top_k]
-
-        cv2_im,percent,bbox_ratio = append_objs_to_img(cv2_im, inference_size, objs, labels)
-
         if hand_state == 1:
-            check_object_close_or_not(percent,bbox_ratio)
-        elif hand_state == 0:
-            check_and_relese_object()
-            
-        frame_rate_calc = calculate_framerate(frame_rate_calc,t1,freq)
-        cv2.imshow('Vision Enable Hand', cv2_im)
+            pin_13_out_led.write(True)
+            t1 = cv2.getTickCount()
+            ret, cv2_im = cap.read()
+            if not ret:
+                #pin_13_out_led.write(False)
+                break
+        
+            cv2_im = cv2.resize(cv2_im,inference_size)
+            cv2_im = cv2.rotate(cv2_im, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            cv2_im_rgb = cv2.cvtColor(cv2_im, cv2.COLOR_BGR2RGB)
+            run_inference(interpreter, cv2_im_rgb.tobytes())
+            objs = get_objects(interpreter, threshold)[:top_k]
 
-        # else:
+            cv2_im,percent,bbox_ratio = append_objs_to_img(cv2_im, inference_size, objs, labels)
+            check_and_close_hand(percent,bbox_ratio)
+
+            frame_rate_calc = calculate_framerate(frame_rate_calc,t1,freq)
+
+            cv2.imshow('Vision Enable Hand', cv2_im)
+            
+            
+        else:
             # hand is closed so need to check for opening the hand
+            pin_13_out_led.write(False)
+            check_and_open_hand()
+            
         if cv2.waitKey(1) & 0xFF == ord('q'):
            break
     
