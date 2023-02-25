@@ -54,6 +54,9 @@ motor = GPIO("/dev/gpiochip0", 9, "out")    # pin 11
 solenoid = GPIO("/dev/gpiochip0", 36, "out")  # pin 12
 pin_13_out_led   = GPIO("/dev/gpiochip0", 10, "out")  # pin 13
 
+to1 = time.time()
+to2 = time.time()
+
 
 #blink led five times on start
 for i in range(0,2):
@@ -63,7 +66,7 @@ for i in range(0,2):
     time.sleep(1)
 
 def open_hand():
-    global hand_state
+    global hand_state,to1,to2
     solenoid.write(False)
     motor.write(True)
     time.sleep(2.5)
@@ -72,6 +75,7 @@ def open_hand():
     hand_state = 1        
     print("Hand Open")
     time.sleep(3)
+    to1 = time.time()
 
 def close_hand_with_object():
     global hand_state
@@ -85,7 +89,7 @@ def close_hand_with_object():
     #end simulation
 
 def close_hand():
-    global hand_state
+    global hand_state,to1,to2
     motor.write(False)
     solenoid.write(True)
     time.sleep(1)
@@ -93,6 +97,7 @@ def close_hand():
     #serial.write(b"1")  
     hand_state = 0
     print("Command Hand close")
+    to1 = time.time()
     #end simulation
 
 #initialize hand
@@ -171,7 +176,7 @@ def main():
     # Initialize frame rate calculation
     frame_rate_calc = 1
     freq = cv2.getTickFrequency()
-
+    
     while cap.isOpened():
          
         # if hand is opened 
@@ -201,8 +206,15 @@ def main():
         elif hand_state == 1 or hand_state == 0:
             if hand_state == 1:
                 text_to_show = "Open to grab object"
+
+                #handle time out limit for  open hand  10 sec
+                to2 = time.time()
+                if (to2 - to1) >= 10:
+                    text_to_show = f'Time limit exit{to2-to1:.2f}'
+                    close_hand()
             else:
                 text_to_show = "Initial Close"
+
             print(text_to_show,hand_state)
             check_object_close_or_not(percent,bbox_ratio)
 
